@@ -51,6 +51,6 @@
       copy:
         dest: instances_config.yml
         content: |
-          ec2_webserver_ids: "{{ ec2_webserver.instances.instance_id }}"
-          ec2_dbserver_ids: "{{ ec2_dbserver.instances.instance_id }}"
-          ec2_sshserver_ids: "{{ ec2_sshserver.instances.instance_id }}"
+          ec2_webserver_ids: "{{ ec2_webserver.instances[0].instance_id }}"
+          ec2_dbserver_ids: "{{ ec2_dbserver.instances[0].instance_id }}"
+          ec2_sshserver_ids: "{{ ec2_sshserver.instances[0].instance_id }}"
