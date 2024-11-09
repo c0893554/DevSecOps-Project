@@ -34,7 +34,7 @@
       register: dbserver_terminated
 
     - name: Remove VPC if no instances remain (conditional rollback)
-      amazon.aws.ec2_vpc:
+      amazon.aws.ec2_vpc_net:
         vpc_id: "{{ vpc_id }}"
         state: absent
       when: webserver_terminated.changed and dbserver_terminated.changed
