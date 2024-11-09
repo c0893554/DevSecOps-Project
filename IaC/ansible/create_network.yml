@@ -1,7 +1,4 @@
 # create_network.yml
-
-- name: Create AWS Network Infrastructure
-  hosts: localhost
   vars:
     configs_dir: "../configs"
 

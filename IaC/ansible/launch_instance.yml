@@ -1,10 +1,5 @@
 # launch_instance.yml
 
-- name: Create AWS Network Infrastructure
-  hosts: localhost
-  vars:
-    user_data_dir: "../user-data"
-    configs_dir: "../configs"
   tasks:
     - name: Load initial instances variables
       include_vars:

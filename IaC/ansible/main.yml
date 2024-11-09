@@ -2,7 +2,9 @@
 - name: Orchestrate AWS Infrastructure Deployment
   hosts: localhost
   gather_facts: no
-
+  vars:
+    user_data_dir: "../user-data"
+    configs_dir: "../configs"
   tasks:
     - name: Create Network Infrastructure
       include_tasks: create_network.yml
