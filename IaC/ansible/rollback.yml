@@ -7,6 +7,7 @@
     - name: Load network configuration variables
       include_vars:
         file: network_config.yml
+      tags: RemoveVPC
   
     - name: Load Instances configuration variables
       include_vars:
