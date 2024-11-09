@@ -1,0 +1,7 @@
+key_webserver_name: "webserver_key"
+key_dbserver_name: "dbserver_key"
+key_sshserver_name: "sshserver_key"
+ec2_webserver_name: "WebServer-EC2"
+ec2_dbserver_name: "DataBase-EC2"
+ec2_sshserver_name: "SSHServer-EC2"
+ami_id: "ami-050cd642fd83388e4"

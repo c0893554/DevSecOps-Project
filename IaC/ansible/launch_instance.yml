@@ -3,17 +3,16 @@
 - name: Create AWS Network Infrastructure
   hosts: localhost
   vars:
-    key_webserver_name: "webserver_key"
-    key_dbserver_name: "dbserver_key"
-    key_sshserver_name: "sshserver_key"
-    ec2_webserver_name: "WebServer-EC2"
-    ec2_dbserver_name: "DataBase-EC2"
-    ec2_sshserver_name: "SSHServer-EC2"
-    ami_id: "ami-050cd642fd83388e4"
+    user_data_dir: "../user-data"
+    configs_dir: "../configs"
   tasks:
+    - name: Load initial instances variables
+      include_vars:
+        file: "{{ configs_dir }}/instances.yml"
+  
     - name: Load network configuration variables
       include_vars:
-        file: network_config.yml
+        file: "{{ configs_dir }}/network_config.yml"
   
     - name: Create WebServer Instance
       amazon.aws.ec2_instance:
@@ -23,6 +22,7 @@
         instance_type: t2.micro
         image_id: "{{ ami_id }}"
         security_group: "{{ security_group_name }}"
+        user_data: "{{ lookup('file', user_data_dir + 'user-data-webserver.sh') }}"
         network_interfaces:
           - assign_public_ip: true
       register: ec2_webserver
@@ -35,6 +35,7 @@
         instance_type: t2.micro
         image_id: "{{ ami_id }}"
         security_group: "{{ security_group_db_name }}"
+        user_data: "{{ lookup('file', user_data_dir + 'user-data-dbserver.sh') }}"
       register: ec2_dbserver
 
     - name: Create SSH Server Instance
@@ -45,6 +46,7 @@
         instance_type: t2.micro
         image_id: "{{ ami_id }}"
         security_group: "{{ security_group_ssh_name }}"
+        user_data: "{{ lookup('file', user_data_dir + 'user-data-shserver.sh') }}"
         network_interfaces:
           - assign_public_ip: true
       register: ec2_sshserver

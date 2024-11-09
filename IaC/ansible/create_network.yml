@@ -3,26 +3,13 @@
 - name: Create AWS Network Infrastructure
   hosts: localhost
   vars:
-    region: "us-east-2"
-    vpc_cidr: "10.0.0.0/16"
-    vpc_name: "WebApplication-VPC"
-    subnet_cidr: "10.0.1.0/24"
-    subnet_db_cidr: "10.0.2.0/24"
-    subnet_ssh_cidr: "10.0.3.0/24"
-    subnet_name: "WebServer-Subnet"
-    igw_name: "WebApplication-IGW"
-    route_table_name: "WebServer-RouteTable"
-    security_group_name: "WebServer-SG"
-    subnet_db_name: "DataBase-Subnet"
-    route_table_name_db: "DataBase-RouteTable"
-    security_group_name_db: "DataBase-SG"
-    subnet_ssh_name: "SSH-Subnet"
-    route_table_name_ssh: "SSH-RouteTable"
-    security_group_name_ssh: "SSH-SG"
+    configs_dir: "../configs"
 
-
-    
   tasks:
+    - name: Load initial networks variables
+      include_vars:
+        file: "{{ configs_dir }}/networks.yml"
+  
     - name: Create VPC
       amazon.aws.ec2_vpc_net:
         name: "{{ vpc_name }}"
@@ -163,7 +150,7 @@
 
     - name: Save Network Configuration to File
       copy:
-        dest: network_config.yml
+        dest: "{{ configs_dir }}/network_config.yml"
         content: |
           vpc_id: "{{ vpc.vpc.id }}"
           subnet_id: "{{ subnet.subnet.id }}"
