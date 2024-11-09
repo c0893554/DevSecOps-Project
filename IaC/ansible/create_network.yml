@@ -1,8 +1,4 @@
 # create_network.yml
-  vars:
-    configs_dir: "../configs"
-
-  tasks:
     - name: Load initial networks variables
       include_vars:
         file: "{{ configs_dir }}/networks.yml"

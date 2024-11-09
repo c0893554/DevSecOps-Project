@@ -1,6 +1,5 @@
 # launch_instance.yml
 
-  tasks:
     - name: Load initial instances variables
       include_vars:
         file: "{{ configs_dir }}/instances.yml"
