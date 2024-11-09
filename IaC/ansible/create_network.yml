@@ -41,13 +41,11 @@
             to_port: 80
             cidr_ip: "0.0.0.0/0"
             rule_desc: "Allow HTTP"
-            group_name: "HTTP Service"
           - proto: tcp
             from_port: 443
             to_port: 443
             cidr_ip: "0.0.0.0/0"
             rule_desc: "Allow HTTPS"
-            group_name: "HTTPS Service"
           - proto: tcp
             from_port: 22
             to_port: 22
@@ -80,13 +78,11 @@
             to_port: 5432
             cidr_ip: "{{ subnet_cidr }}"
             rule_desc: "Allow PostgreSQL"
-            group_name: "PostgreSQL Service"
           - proto: tcp
             from_port: 22
             to_port: 22
             cidr_ip: "{{ subnet_ssh_cidr }}"
             rule_desc: "Allow SSH"
-            group_name: "Administrator"
       register: security_group_db
 
     - name: Create subnet SSH Server
