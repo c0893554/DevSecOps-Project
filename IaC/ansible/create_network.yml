@@ -3,18 +3,34 @@
 - name: Create AWS Network Infrastructure
   hosts: localhost
   vars:
-    subnet_cidr: "10.0.1.0/24"
     region: "us-east-2"
-    vpc_id: "vpc-0a99c7319c2e931cb"
+    vpc_cidr: "10.0.0.0/16"
+    vpc_name: "WebApplication-VPC"
+    subnet_cidr: "10.0.1.0/24"
     subnet_name: "WebServer-Subnet"
     igw_name: "WebApplication-IGW"
     route_table_name: "WebServer-RouteTable"
     security_group_name: "WebServer-SG"
+    subnet_db_cidr: "10.0.2.0/24"
+    subnet_db_name_db: "DataBase-Subnet"
+    route_table_name_db: "DataBase-RouteTable"
+    security_group_name_db: "DataBase-SG"
+    key_webserver_name: "webserver_key"
+    key_dbserver_name: "dbserver_key"
+    ec2_webserver_name: "WebServer-EC2"
+    ec2_dbserver_name: "DataBase-EC2"
+    ami_id: "ami-050cd642fd83388e4"
     
   tasks:
-    - name: Create Subnet
+    - name: Create VPC
+      amazon.aws.ec2_vpc_net:
+        name: "{{ vpc_name }}"
+        cidr_block: "{{ vpc_cidr }}"
+      register: vpc
+    
+    - name: Create Subnet to WebServer
       amazon.aws.ec2_vpc_subnet:
-        vpc_id: "{{ vpc_id }}"
+        vpc_id: "{{ vpc.vpc.id }}"
         cidr: "{{ subnet_cidr }}"
         region: "{{ region }}"
         az: "{{ region }}a"
@@ -22,17 +38,17 @@
           Name: "{{ subnet_name }}"
       register: subnet
 
-    - name: Create Internet Gateway
+    - name: Create Internet Gateway WebServer
       amazon.aws.ec2_vpc_igw:
-        vpc_id: "{{ vpc_id }}"
+        vpc_id: "{{ vpc.vpc.id }}"
         region: "{{ region }}"
         tags:
           Name: "{{ igw_name }}"
       register: igw
 
-    - name: Create Route Table
+    - name: Create Route Table WebServer
       amazon.aws.ec2_vpc_route_table:
-        vpc_id: "{{ vpc_id }}"
+        vpc_id: "{{ vpc.vpc.id }}"
         region: "{{ region }}"
         tags:
           Name: "{{ route_table_name }}"
@@ -43,11 +59,11 @@
             gateway_id: "{{ igw.gateway_id }}"
       register: route_table
 
-    - name: Create Security Group
+    - name: Create Security Group WebServer
       amazon.aws.ec2_security_group:
         name: "{{ security_group_name }}"
         description: "Security Group for Web Server"
-        vpc_id: "{{ vpc_id }}"
+        vpc_id: "{{ vpc.vpc.id }}"
         region: "{{ region }}"
         tags:
           Name: "{{ security_group_name }}"
@@ -63,3 +79,56 @@
             cidr_ip: "0.0.0.0/0"
             group_desc: "Allow SSH"
       register: security_group
+
+    - name: Create subnet DBServer
+      amazon.aws.ec2_vpc_subnet:
+        vpc_id: "{{ vpc.vpc.id }}"
+        cidr: "{{ subnet_db_cidr }}"
+        region: "{{ region }}"
+        az: "{{ region }}a"
+        tags:
+          Name: "{{ subnet_db_name_db }}"
+      register: subnet_db
+
+    - name: Create Route Table DBServer
+      amazon.aws.ec2_vpc_route_table:
+        vpc_id: "{{ vpc.vpc.id }}"
+        region: "{{ region }}"
+        tags:
+          Name: "{{ route_table_name_db }}"
+        subnets:
+          - "{{ subnet_db.subnet.id }}"
+          - "{{ subnet.subnet.id }}"
+      register: route_table_db
+
+    - name: Create Security Group DBServer
+      amazon.aws.ec2_security_group:
+        name: "{{ security_group_name_db }}"
+        description: "Security Group for DataBase Server"
+        vpc_id: "{{ vpc.vpc.id }}"
+        region: "{{ region }}"
+        tags:
+          Name: "{{ security_group_name_db }}"
+        rules:
+          - proto: tcp
+            from_port: 3306
+            to_port: 3306
+            cidr_ip: "0.0.0.0/0"
+            group_desc: "Allow MySQL"
+          - proto: tcp
+            from_port: 22
+            to_port: 22
+            cidr_ip: "0.0.0.0/0"
+            group_desc: "Allow SSH"
+      register: security_group_db
+
+    - name: Save Network Configuration to File
+      copy:
+        dest: network_config.yml
+        content: |
+          subnet_id: "{{ subnet.subnet.id }}"
+          subnet_db_id: "{{ subnet_db.subnet.id }}"
+          security_group_name: "{{ security_group.group_name }}"
+          security_group_db_name: "{{ security_group_db.group_name }}"
+    
+  

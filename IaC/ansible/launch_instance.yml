@@ -1,0 +1,34 @@
+# launch_instance.yml
+
+- name: Create AWS Network Infrastructure
+  hosts: localhost
+  vars:
+    key_webserver_name: "webserver_key"
+    key_dbserver_name: "dbserver_key"
+    ec2_webserver_name: "WebServer-EC2"
+    ec2_dbserver_name: "DataBase-EC2"
+    ami_id: "ami-050cd642fd83388e4"
+  tasks:
+    - name: Load network configuration variables
+      include_vars:
+        file: network_config.yml
+  
+    - name: Create WebServer Instance
+      amazon.aws.ec2_instance:
+        name: "{{ ec2_webserver_name }}"
+        key_name: "{{ key_webserver_name }}"
+        vpc_subnet_id: "{{ subnet_id }}"
+        instance_type: t2.micro
+        image_id: "{{ ami_id }}"
+        security_group: "{{ security_group_name }}"
+        network_interfaces:
+          - assign_public_ip: true
+      
+    - name: Create DBServer Instance
+      amazon.aws.ec2_instance:
+        name: "{{ ec2_dbserver_name }}"
+        key_name: "{{ key_dbserver_name }}"
+        vpc_subnet_id: "{{ subnet_db_id }}"
+        instance_type: t2.micro
+        image_id: "{{ ami_id }}"
+        security_group: "{{ security_group_db_name }}"
