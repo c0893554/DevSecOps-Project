@@ -37,7 +37,7 @@
       register: sshserver_terminated
 
     - name: Wait for Instances to Terminate Completely
-      amazon.aws.ec2_instance_facts:
+      amazon.aws.ec2_instance_info:
         filters:
           instance_id:
             - "{{ ec2_webserver_ids }}"
