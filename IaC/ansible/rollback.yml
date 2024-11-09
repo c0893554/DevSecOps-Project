@@ -103,14 +103,6 @@
         state: absent
       tags: RemoveVPC
 
-    - name: delete route table default
-      amazon.aws.ec2_vpc_route_table:
-        vpc_id: "{{ vpc_id }}"
-        route_table_id: "rtb-004edbbc3373b9e28"
-        lookup: id
-        state: absent
-      tags: RemoveVPC
-
     - name: Remove VPC if no instances remain (conditional rollback)
       amazon.aws.ec2_vpc_net:
         vpc_id: "{{ vpc_id }}"
