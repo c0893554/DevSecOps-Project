@@ -16,7 +16,7 @@
         instance_type: t2.micro
         image_id: "{{ ami_id }}"
         security_group: "{{ security_group_name }}"
-        user_data: "{{ lookup('file', user_data_dir + 'user-data-webserver.sh') }}"
+        user_data: "{{ lookup('file', user_data_dir + '/user-data-webserver.sh') }}"
         iam_instance_profile: "{{ iam_role_name }}"
         network_interfaces:
           - assign_public_ip: true
@@ -30,7 +30,7 @@
         instance_type: t2.micro
         image_id: "{{ ami_id }}"
         security_group: "{{ security_group_db_name }}"
-        user_data: "{{ lookup('file', user_data_dir + 'user-data-dbserver.sh') }}"
+        user_data: "{{ lookup('file', user_data_dir + '/user-data-dbserver.sh') }}"
         iam_instance_profile: "{{ iam_role_name }}"
       register: ec2_dbserver
 
@@ -42,7 +42,7 @@
         instance_type: t2.micro
         image_id: "{{ ami_id }}"
         security_group: "{{ security_group_ssh_name }}"
-        user_data: "{{ lookup('file', user_data_dir + 'user-data-shserver.sh') }}"
+        user_data: "{{ lookup('file', user_data_dir + '/user-data-shserver.sh') }}"
         network_interfaces:
           - assign_public_ip: true
       register: ec2_sshserver
