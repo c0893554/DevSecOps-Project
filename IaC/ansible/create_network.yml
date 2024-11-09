@@ -51,7 +51,6 @@
             to_port: 22
             cidr_ip: "{{ subnet_ssh_cidr }}"
             rule_desc: "Allow SSH"
-            group_name: "Administrator"
       register: security_group
 
     - name: Create subnet DBServer
@@ -109,7 +108,6 @@
             to_port: 22
             cidr_ip: "0.0.0.0/0"
             rule_desc: "Allow SSH"
-            group_name: "Administrator"
       register: security_group_ssh
 
     - name: Create Route Table OutSide
