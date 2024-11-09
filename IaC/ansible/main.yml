@@ -5,16 +5,19 @@
 
   tasks:
     - name: Create Network Infrastructure
-      include_tasks: create_network.yml
+      ansible.builtin.include_tasks: 
+        file: create_network.yml
       register: network_result
       failed_when: network_result is failed
 
     - name: Launch Instances
-      include_tasks: launch_instance.yml
+      ansible.builtin.include_tasks: 
+        file: launch_instance.yml
       register: instance_result
       failed_when: instance_result is failed
 
     - name: Run Rollback if any task failed
-      include_tasks: rollback.yml
+      ansible.builtin.include_tasks: 
+        file: rollback.yml
       when: network_result is failed or instance_result is failed
       tags: rollback
