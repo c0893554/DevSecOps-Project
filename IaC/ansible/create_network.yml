@@ -34,7 +34,7 @@
         vpc_id: "{{ vpc.vpc.id }}"
         region: "{{ region }}"
         tags:
-          Name: "{{ security_group_name }}"
+          Name: "{{ security_group_name_web }}"
         rules:
           - proto: tcp
             from_port: 80
