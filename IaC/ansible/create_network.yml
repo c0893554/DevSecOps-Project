@@ -86,7 +86,7 @@
         region: "{{ region }}"
         az: "{{ region }}a"
         tags:
-          Name: "{{ subnet_db_name }}"
+          Name: "{{ subnet_ssh_name }}"
       register: subnet_shh
 
     - name: Create Security Group SSH Server
