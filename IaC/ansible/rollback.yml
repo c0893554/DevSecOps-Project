@@ -79,6 +79,30 @@
       ignore_errors: yes  # Skip if there is no internet gateway attached
       tags: RemoveVPC
 
+    - name: delete route table web server
+      amazon.aws.ec2_vpc_route_table:
+        vpc_id: "{{ vpc_id }}"
+        route_table_id: "rtb-018d9d81f3aa92eb2"
+        lookup: id
+        state: absent
+      tags: RemoveVPC
+
+    - name: delete route table db server
+      amazon.aws.ec2_vpc_route_table:
+        vpc_id: "{{ vpc_id }}"
+        route_table_id: "rtb-0fedd43d63adefcd5"
+        lookup: id
+        state: absent
+      tags: RemoveVPC
+
+    - name: delete route table ssh server
+      amazon.aws.ec2_vpc_route_table:
+        vpc_id: "{{ vpc_id }}"
+        route_table_id: "rtb-0c83430e037280b7e"
+        lookup: id
+        state: absent
+      tags: RemoveVPC
+
     - name: Remove VPC if no instances remain (conditional rollback)
       amazon.aws.ec2_vpc_net:
         vpc_id: "{{ vpc_id }}"
