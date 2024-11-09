@@ -2,35 +2,38 @@
 - name: Rollback AWS Infrastructure
   hosts: localhost
   gather_facts: no
-  vars:
-    ec2_webserver_name: "WebServer-EC2"
-    ec2_dbserver_name: "DataBase-EC2"
-    ec2_sshserver_name: "SSHServer-EC2"
 
   tasks:
     - name: Load network configuration variables
       include_vars:
         file: network_config.yml
+  
+    - name: Load Instances configuration variables
+      include_vars:
+        file: instances_config.yml
 
     - name: Terminate WebServer Instance
       amazon.aws.ec2_instance:
-        name: "{{ ec2_webserver_name }}"
         state: absent  
         wait: yes
+        instance_ids:
+          - {{ ec2_webserver_ids }}
       register: webserver_terminated
 
     - name: Terminate DBServer Instance
       amazon.aws.ec2_instance:
-        name: "{{ ec2_dbserver_name }}"
         state: absent  
         wait: yes
+        instance_ids:
+          - {{ ec2_dbserver_ids }}
       register: dbserver_terminated
 
     - name: Terminate SSH Server Instance
       amazon.aws.ec2_instance:
-        name: "{{ ec2_sshserver_name }}"
         state: absent 
         wait: yes
+        instance_ids:
+          - {{ ec2_sshserver_ids }}
       register: dbserver_terminated
 
     - name: Remove VPC if no instances remain (conditional rollback)

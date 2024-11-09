@@ -25,6 +25,7 @@
         security_group: "{{ security_group_name }}"
         network_interfaces:
           - assign_public_ip: true
+      register: ec2_webserver
       
     - name: Create DBServer Instance
       amazon.aws.ec2_instance:
@@ -34,6 +35,7 @@
         instance_type: t2.micro
         image_id: "{{ ami_id }}"
         security_group: "{{ security_group_db_name }}"
+      register: ec2_dbserver
 
     - name: Create SSH Server Instance
       amazon.aws.ec2_instance:
@@ -43,3 +45,12 @@
         instance_type: t2.micro
         image_id: "{{ ami_id }}"
         security_group: "{{ security_group_ssh_name }}"
+      register: ec2_sshserver
+
+    - name: Save Instances Configuration to File
+      copy:
+        dest: instances_config.yml
+        content: |
+          ec2_webserver_ids: "{{ ec2_webserver.instances.instance_id }}"
+          ec2_dbserver_ids: "{{ ec2_dbserver.instances.instance_id }}"
+          ec2_sshserver_ids: "{{ ec2_sshserver.instances.instance_id }}"
