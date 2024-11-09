@@ -10,10 +10,14 @@
       include_vars:
         file: "{{ configs_dir }}/network_config.yml"
 
+    - name: Load initial networks variables
+      include_vars:
+        file: "{{ configs_dir }}/networks.yml"
+
     - name: Create Route Table OutSide
       amazon.aws.ec2_vpc_route_table:
         vpc_id: "{{ vpc_id }}"
-        region: "us-east-2"
+        region: "{{ region }}"
         tags:
           Name: "{{ route_table_name_outside }}"
         subnets:
