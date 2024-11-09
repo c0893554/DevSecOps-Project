@@ -46,9 +46,7 @@
           - "{{ ec2_dbserver_ids }}"
           - "{{ ec2_sshserver_ids }}"
       register: instances_check
-      until: instances_check.instances | length == 0
-      retries: 10
-      delay: 15
+      delay: 60
 
     - name: Remove Subnet Web Server
       amazon.aws.ec2_vpc_subnet:
@@ -81,26 +79,18 @@
       ignore_errors: yes  # Skip if there is no internet gateway attached
       tags: RemoveVPC
 
-    - name: delete route table web server
+    - name: delete route table outside
       amazon.aws.ec2_vpc_route_table:
         vpc_id: "{{ vpc_id }}"
-        route_table_id: "{{ route_table_id }}"
+        route_table_id: "{{ route_table_outside_id }}"
         lookup: id
         state: absent
       tags: RemoveVPC
 
-    - name: delete route table db server
+    - name: delete route table inside
       amazon.aws.ec2_vpc_route_table:
         vpc_id: "{{ vpc_id }}"
-        route_table_id: "{{ route_table_db_id }}"
-        lookup: id
-        state: absent
-      tags: RemoveVPC
-
-    - name: delete route table ssh server
-      amazon.aws.ec2_vpc_route_table:
-        vpc_id: "{{ vpc_id }}"
-        route_table_id: "{{ route_table__ssh_id }}"
+        route_table_id: "{{ route_table_name_inside_id }}"
         lookup: id
         state: absent
       tags: RemoveVPC

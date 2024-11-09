@@ -27,19 +27,6 @@
           Name: "{{ igw_name }}"
       register: igw
 
-    - name: Create Route Table WebServer
-      amazon.aws.ec2_vpc_route_table:
-        vpc_id: "{{ vpc.vpc.id }}"
-        region: "{{ region }}"
-        tags:
-          Name: "{{ route_table_name }}"
-        subnets:
-          - "{{ subnet.subnet.id }}"
-        routes:
-          - dest: 0.0.0.0/0
-            gateway_id: "{{ igw.gateway_id }}"
-      register: route_table
-
     - name: Create Security Group WebServer
       amazon.aws.ec2_security_group:
         name: "{{ security_group_name }}"
@@ -70,17 +57,6 @@
         tags:
           Name: "{{ subnet_db_name }}"
       register: subnet_db
-
-    - name: Create Route Table DBServer
-      amazon.aws.ec2_vpc_route_table:
-        vpc_id: "{{ vpc.vpc.id }}"
-        region: "{{ region }}"
-        tags:
-          Name: "{{ route_table_name_db }}"
-        subnets:
-          - "{{ subnet_db.subnet.id }}"
-          - "{{ subnet.subnet.id }}"
-      register: route_table_db
 
     - name: Create Security Group DBServer
       amazon.aws.ec2_security_group:
@@ -113,18 +89,6 @@
           Name: "{{ subnet_db_name }}"
       register: subnet_shh
 
-    - name: Create Route Table SSH Server
-      amazon.aws.ec2_vpc_route_table:
-        vpc_id: "{{ vpc.vpc.id }}"
-        region: "{{ region }}"
-        tags:
-          Name: "{{ route_table_name_ssh }}"
-        subnets:
-          - "{{ subnet_db.subnet.id }}"
-          - "{{ subnet.subnet.id }}"
-          - "{{ subnet_shh.subnet.id }}"
-      register: route_table_ssh
-
     - name: Create Security Group SSH Server
       amazon.aws.ec2_security_group:
         name: "{{ security_group_name_ssh }}"
@@ -141,6 +105,32 @@
             group_desc: "Allow SSH"
       register: security_group_ssh
 
+    - name: Create Route Table WebServer
+      amazon.aws.ec2_vpc_route_table:
+        vpc_id: "{{ vpc.vpc.id }}"
+        region: "{{ region }}"
+        tags:
+          Name: "{{ route_table_name_outside }}"
+        subnets:
+          - "{{ subnet.subnet.id }}"
+          - "{{ subnet_shh.subnet.id }}"
+        routes:
+          - dest: 0.0.0.0/0
+            gateway_id: "{{ igw.gateway_id }}"
+      register: route_table_outside
+
+    - name: Create Route Table SSH Server
+      amazon.aws.ec2_vpc_route_table:
+        vpc_id: "{{ vpc.vpc.id }}"
+        region: "{{ region }}"
+        tags:
+          Name: "{{ route_table_name_inside }}"
+        subnets:
+          - "{{ subnet_db.subnet.id }}"
+          - "{{ subnet.subnet.id }}"
+          - "{{ subnet_shh.subnet.id }}"
+      register: route_table_inside
+
     - name: Save Network Configuration to File
       copy:
         dest: "{{ configs_dir }}/network_config.yml"
@@ -155,8 +145,5 @@
           security_group_id: "{{ security_group.group_id }}"
           security_group_db_id: "{{ security_group_db.group_id }}"
           security_group_ssh_id: "{{ security_group_ssh.group_id }}"
-          route_table_id: "{{ route_table.route_table.id }}"
-          route_table_db_id: "{{ route_table_db.route_table.id }}"
-          route_table__ssh_id: "{{ route_table_ssh.route_table.id }}"
-    
-  
+          route_table_outside_id: "{{ route_table_outside.route_table.id }}"
+          route_table_name_inside_id: "{{ route_table_name_inside.route_table.id }}"

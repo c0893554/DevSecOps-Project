@@ -49,7 +49,7 @@
 
     - name: Save Instances Configuration to File
       copy:
-        dest: instances_config.yml
+        dest: "{{ configs_dir }}/instances_config.yml"
         content: |
           ec2_webserver_ids: "{{ ec2_webserver.instances[0].instance_id }}"
           ec2_dbserver_ids: "{{ ec2_dbserver.instances[0].instance_id }}"

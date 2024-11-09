@@ -9,8 +9,10 @@
     - name: Create Network Infrastructure
       include_tasks: create_network.yml
       register: network_result
+      tags: network
 
     - name: Launch Instances
       include_tasks: launch_instance.yml
       register: instance_result
+      tags: instances
 
