@@ -82,7 +82,7 @@
     - name: delete route table web server
       amazon.aws.ec2_vpc_route_table:
         vpc_id: "{{ vpc_id }}"
-        route_table_id: "rtb-018d9d81f3aa92eb2"
+        route_table_id: "{{ route_table_id }}"
         lookup: id
         state: absent
       tags: RemoveVPC
@@ -90,7 +90,7 @@
     - name: delete route table db server
       amazon.aws.ec2_vpc_route_table:
         vpc_id: "{{ vpc_id }}"
-        route_table_id: "rtb-0fedd43d63adefcd5"
+        route_table_id: "{{ route_table_db_id }}"
         lookup: id
         state: absent
       tags: RemoveVPC
@@ -98,8 +98,26 @@
     - name: delete route table ssh server
       amazon.aws.ec2_vpc_route_table:
         vpc_id: "{{ vpc_id }}"
-        route_table_id: "rtb-0c83430e037280b7e"
+        route_table_id: "{{ route_table__ssh_id }}"
         lookup: id
+        state: absent
+      tags: RemoveVPC
+
+    - name: delete Security group Web Server
+      amazon.aws.ec2_security_group:
+        group_id: "{{ security_group_id }}"
+        state: absent
+      tags: RemoveVPC
+
+    - name: delete Security group DB Server
+      amazon.aws.ec2_security_group:
+        group_id: "{{ security_group_db_id }}"
+        state: absent
+      tags: RemoveVPC
+
+    - name: delete Security group SSH Server
+      amazon.aws.ec2_security_group:
+        group_id: "{{ security_group_ssh_id }}"
         state: absent
       tags: RemoveVPC
 

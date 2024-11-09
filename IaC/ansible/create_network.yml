@@ -172,5 +172,11 @@
           security_group_name: "{{ security_group.group_name }}"
           security_group_db_name: "{{ security_group_db.group_name }}"
           security_group_ssh_name: "{{ security_group_ssh.group_name }}"
+          security_group_id: "{{ security_group.group_id }}"
+          security_group_db_id: "{{ security_group_db.group_id }}"
+          security_group_ssh_id: "{{ security_group_ssh.group_id }}"
+          route_table_id: "{{ route_table.route_table.id }}"
+          route_table_db_id: "{{ route_table_db.route_table.id }}"
+          route_table__ssh_id: "{{ route_table_ssh.route_table.id }}"
     
   
