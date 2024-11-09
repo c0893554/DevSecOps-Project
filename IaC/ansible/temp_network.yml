@@ -13,7 +13,7 @@
     - name: Create Route Table OutSide
       amazon.aws.ec2_vpc_route_table:
         vpc_id: "{{ vpc_id }}"
-        region: "{{ region }}"
+        region: "us-east-2"
         tags:
           Name: "{{ route_table_name_outside }}"
         subnets:
