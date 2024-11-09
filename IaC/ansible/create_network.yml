@@ -75,7 +75,7 @@
           - proto: tcp
             from_port: 5432
             to_port: 5432
-            cidr_ip: "{{ subnet_cidr }}"
+            cidr_ip: "{{ subnet_web_cidr }}"
             rule_desc: "Allow PostgreSQL"
           - proto: tcp
             from_port: 22
