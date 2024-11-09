@@ -25,5 +25,5 @@
           - "{{ subnet_shh_id }}"
         routes:
           - dest: 0.0.0.0/0
-            gateway_id: "{{ igw.gateway_id }}"
+            gateway_id: "igw-085214267807e0bf6"
       register: route_table_outside
