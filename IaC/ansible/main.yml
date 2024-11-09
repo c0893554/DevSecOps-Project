@@ -14,7 +14,3 @@
       include_tasks: launch_instance.yml
       register: instance_result
 
-    - name: Run Rollback if any task failed
-      include_tasks: rollback.yml
-      when: network_result is failed or instance_result is failed
-      tags: rollback
