@@ -52,7 +52,6 @@
       amazon.aws.ec2_vpc_subnet:
         vpc_id: "{{ vpc_id }}"
         cidr: "10.0.1.0/24"
-        subnet_id: "{{ subnet_id }}"
         state: absent
       ignore_errors: yes  # Ignore if already deleted or does not exist
       tags: RemoveVPC
@@ -61,7 +60,6 @@
       amazon.aws.ec2_vpc_subnet:
         vpc_id: "{{ vpc_id }}"
         cidr: "10.0.2.0/24"
-        subnet_id: "{{ subnet_db_id }}"
         state: absent
       ignore_errors: yes  # Ignore if already deleted or does not exist
       tags: RemoveVPC
@@ -69,7 +67,6 @@
     - name: Remove Subnet DB Server
       amazon.aws.ec2_vpc_subnet:
         vpc_id: "{{ vpc_id }}"
-        subnet_id: "{{ subnet_shh_id }}"
         cidr: "10.0.3.0/24"
         state: absent
       ignore_errors: yes  # Ignore if already deleted or does not exist
