@@ -1,0 +1,20 @@
+# main.yml
+- name: Orchestrate AWS Infrastructure Deployment
+  hosts: localhost
+  gather_facts: no
+
+  tasks:
+    - name: Create Network Infrastructure
+      include_tasks: create_network.yml
+      register: network_result
+      failed_when: network_result is failed
+
+    - name: Launch Instances
+      include_tasks: launch_instance.yml
+      register: instance_result
+      failed_when: instance_result is failed
+
+    - name: Run Rollback if any task failed
+      include_tasks: rollback.yml
+      when: network_result is failed or instance_result is failed
+      tags: rollback
