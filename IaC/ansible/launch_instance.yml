@@ -5,8 +5,10 @@
   vars:
     key_webserver_name: "webserver_key"
     key_dbserver_name: "dbserver_key"
+    key_sshserver_name: "sshserver_key"
     ec2_webserver_name: "WebServer-EC2"
     ec2_dbserver_name: "DataBase-EC2"
+    ec2_sshserver_name: "SSHServer-EC2"
     ami_id: "ami-050cd642fd83388e4"
   tasks:
     - name: Load network configuration variables
@@ -32,3 +34,12 @@
         instance_type: t2.micro
         image_id: "{{ ami_id }}"
         security_group: "{{ security_group_db_name }}"
+
+    - name: Create SSH Server Instance
+      amazon.aws.ec2_instance:
+        name: "{{ ec2_sshserver_name }}"
+        key_name: "{{ key_sshserver_name }}"
+        vpc_subnet_id: "{{ subnet_shh_id }}"
+        instance_type: t2.micro
+        image_id: "{{ ami_id }}"
+        security_group: "{{ security_group_ssh_name }}"
