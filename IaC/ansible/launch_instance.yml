@@ -23,6 +23,7 @@
         image_id: "{{ ami_id }}"
         security_group: "{{ security_group_name }}"
         user_data: "{{ lookup('file', user_data_dir + 'user-data-webserver.sh') }}"
+        iam_instance_profile: "{{ iam_role_name }}"
         network_interfaces:
           - assign_public_ip: true
       register: ec2_webserver
@@ -36,6 +37,7 @@
         image_id: "{{ ami_id }}"
         security_group: "{{ security_group_db_name }}"
         user_data: "{{ lookup('file', user_data_dir + 'user-data-dbserver.sh') }}"
+        iam_instance_profile: "{{ iam_role_name }}"
       register: ec2_dbserver
 
     - name: Create SSH Server Instance
