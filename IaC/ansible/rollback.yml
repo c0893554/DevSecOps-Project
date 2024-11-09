@@ -34,10 +34,22 @@
         wait: yes
         instance_ids:
           - "{{ ec2_sshserver_ids }}"
-      register: dbserver_terminated
+      register: sshserver_terminated
+
+    - name: Wait for Instances to Terminate Completely
+      amazon.aws.ec2_instance_facts:
+        filters:
+          instance_id:
+            - "{{ ec2_webserver_ids }}"
+            - "{{ ec2_dbserver_ids }}"
+            - "{{ ec2_sshserver_ids }}"
+      register: instances_check
+      until: instances_check.instances | length == 0
+      retries: 10
+      delay: 15
 
     - name: Remove VPC if no instances remain (conditional rollback)
       amazon.aws.ec2_vpc_net:
         vpc_id: "{{ vpc_id }}"
         state: absent
-      when: webserver_terminated.changed and dbserver_terminated.changed
+      when: instances_check.instances | length == 0

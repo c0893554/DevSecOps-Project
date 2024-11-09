@@ -45,6 +45,8 @@
         instance_type: t2.micro
         image_id: "{{ ami_id }}"
         security_group: "{{ security_group_ssh_name }}"
+        network_interfaces:
+          - assign_public_ip: true
       register: ec2_sshserver
 
     - name: Save Instances Configuration to File
