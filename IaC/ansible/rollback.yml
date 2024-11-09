@@ -17,7 +17,7 @@
         state: absent  
         wait: yes
         instance_ids:
-          - {{ ec2_webserver_ids }}
+          - "{{ ec2_webserver_ids }}"
       register: webserver_terminated
 
     - name: Terminate DBServer Instance
@@ -25,7 +25,7 @@
         state: absent  
         wait: yes
         instance_ids:
-          - {{ ec2_dbserver_ids }}
+          - "{{ ec2_dbserver_ids }}"
       register: dbserver_terminated
 
     - name: Terminate SSH Server Instance
@@ -33,7 +33,7 @@
         state: absent 
         wait: yes
         instance_ids:
-          - {{ ec2_sshserver_ids }}
+          - "{{ ec2_sshserver_ids }}"
       register: dbserver_terminated
 
     - name: Remove VPC if no instances remain (conditional rollback)
