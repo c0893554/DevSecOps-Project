@@ -1,0 +1,20 @@
+# main.yml
+- name: Orchestrate AWS Infrastructure Deployment
+  hosts: localhost
+  gather_facts: no
+  vars:
+    user_data_dir: "../user-data"
+    configs_dir: "../configs"
+  tasks:
+    - name: Load network configuration variables
+      include_vars:
+        file: "{{ configs_dir }}/network_config.yml"
+
+    - name: delete route table
+      amazon.aws.ec2_vpc_route_table:
+        vpc_id: vpc_id
+        region: us-east-2
+        route_table_id: "{{ route_table_outside_id }}"
+        subnets:
+          - "{{ subnet_web_id }}"
+          - "{{ subnet_shh_id }}"

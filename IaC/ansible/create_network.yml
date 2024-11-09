@@ -141,7 +141,7 @@
         dest: "{{ configs_dir }}/network_config.yml"
         content: |
           vpc_id: "{{ vpc.vpc.id }}"
-          subnet_id: "{{ subnet_web.subnet.id }}"
+          subnet_web_id: "{{ subnet_web.subnet.id }}"
           subnet_db_id: "{{ subnet_db.subnet.id }}"
           subnet_shh_id: "{{ subnet_shh.subnet.id }}"
           security_group_name: "{{ security_group.group_name }}"

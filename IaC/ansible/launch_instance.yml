@@ -12,7 +12,7 @@
       amazon.aws.ec2_instance:
         name: "{{ ec2_webserver_name }}"
         key_name: "{{ key_webserver_name }}"
-        vpc_subnet_id: "{{ subnet_id }}"
+        vpc_subnet_id: "{{ subnet_web_id }}"
         instance_type: t2.micro
         image_id: "{{ ami_id }}"
         security_group: "{{ security_group_name }}"
