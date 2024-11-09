@@ -51,5 +51,4 @@
       amazon.aws.ec2_vpc_net:
         vpc_id: "{{ vpc_id }}"
         state: absent
-      when: instances_check.instances | length == 0
       tags: RemoveVPC
