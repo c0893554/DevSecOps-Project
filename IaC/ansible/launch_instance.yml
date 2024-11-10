@@ -3,11 +3,11 @@
     - name: Load initial instances variables
       ansible.builtin.include_vars:
         file: "{{ configs_dir }}/instances.yml"
-  
+
     - name: Load network configuration variables
       include_vars:
         file: "{{ configs_dir }}/network_config.yml"
-  
+
     - name: Create WebServer Instance
       amazon.aws.ec2_instance:
         name: "{{ ec2_webserver_name }}"
@@ -20,7 +20,7 @@
         network_interfaces:
           - assign_public_ip: true
       register: ec2_webserver
-      
+
     - name: Create DBServer Instance
       amazon.aws.ec2_instance:
         name: "{{ ec2_dbserver_name }}"
@@ -43,7 +43,7 @@
         network_interfaces:
           - assign_public_ip: true
       register: ec2_sshserver
-    
+
     - name: Retrieve existing AWS Secret
       amazon.aws.aws_secret:
         name: "{{ secret_name }}"
@@ -54,7 +54,7 @@
     - name: Update the HOST key with the new IP address
       set_fact:
         updated_secret: "{{ existing_secret.value | combine({'HOST': ec2_webserver.instances[0].network_interfaces[0].private_ip_address}) }}"
-    
+
     - name: Update the AWS Secret with the new HOST value
       amazon.aws.aws_secret:
         name: "{{ secret_name }}"

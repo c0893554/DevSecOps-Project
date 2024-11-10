@@ -2,13 +2,13 @@
     - name: Load initial networks variables
       include_vars:
         file: "{{ configs_dir }}/networks.yml"
-  
+
     - name: Create VPC
       amazon.aws.ec2_vpc_net:
         name: "{{ vpc_name }}"
         cidr_block: "{{ vpc_cidr }}"
       register: vpc
-    
+
     - name: Create Subnet to WebServer
       amazon.aws.ec2_vpc_subnet:
         vpc_id: "{{ vpc.vpc.id }}"

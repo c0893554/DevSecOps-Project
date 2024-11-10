@@ -10,14 +10,14 @@
       include_vars:
         file: "{{ configs_dir }}/network_config.yml"
       tags: RemoveVPC
-  
+
     - name: Load Instances configuration variables
       include_vars:
         file: "{{ configs_dir }}/instances_config.yml"
 
     - name: Terminate WebServer Instance
       amazon.aws.ec2_instance:
-        state: absent  
+        state: absent
         wait: yes
         instance_ids:
           - "{{ ec2_webserver_ids }}"
@@ -25,7 +25,7 @@
 
     - name: Terminate DBServer Instance
       amazon.aws.ec2_instance:
-        state: absent  
+        state: absent
         wait: yes
         instance_ids:
           - "{{ ec2_dbserver_ids }}"
@@ -33,7 +33,7 @@
 
     - name: Terminate SSH Server Instance
       amazon.aws.ec2_instance:
-        state: absent 
+        state: absent
         wait: yes
         instance_ids:
           - "{{ ec2_sshserver_ids }}"
