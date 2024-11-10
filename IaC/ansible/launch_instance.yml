@@ -1,74 +1,73 @@
 # launch_instance.yml
+- name: Load initial instances variables
+  ansible.builtin.include_vars:
+    file: "{{ configs_dir }}/instances.yml"
 
-    - name: Load initial instances variables
-      ansible.builtin.include_vars:
-        file: "{{ configs_dir }}/instances.yml"
+- name: Load network configuration variables
+  ansible.builtin.include_vars:
+    file: "{{ configs_dir }}/network_config.yml"
 
-    - name: Load network configuration variables
-      ansible.builtin.include_vars:
-        file: "{{ configs_dir }}/network_config.yml"
+- name: Create WebServer Instance
+  amazon.aws.ec2_instance:
+    name: "{{ ec2_webserver_name }}"
+    key_name: "{{ key_webserver_name }}"
+    vpc_subnet_id: "{{ subnet_web_id }}"
+    instance_type: t2.micro
+    image_id: "{{ ami_web_id }}"
+    security_group: "{{ security_group_name }}"
+    iam_instance_profile: "{{ iam_role_name }}"
+    network_interfaces:
+      - assign_public_ip: true
+  register: ec2_webserver
 
-    - name: Create WebServer Instance
-      amazon.aws.ec2_instance:
-        name: "{{ ec2_webserver_name }}"
-        key_name: "{{ key_webserver_name }}"
-        vpc_subnet_id: "{{ subnet_web_id }}"
-        instance_type: t2.micro
-        image_id: "{{ ami_web_id }}"
-        security_group: "{{ security_group_name }}"
-        iam_instance_profile: "{{ iam_role_name }}"
-        network_interfaces:
-          - assign_public_ip: true
-      register: ec2_webserver
+- name: Create DBServer Instance
+  amazon.aws.ec2_instance:
+    name: "{{ ec2_dbserver_name }}"
+    key_name: "{{ key_dbserver_name }}"
+    vpc_subnet_id: "{{ subnet_db_id }}"
+    instance_type: t2.micro
+    image_id: "{{ ami_db_id }}"
+    security_group: "{{ security_group_db_name }}"
+    iam_instance_profile: "{{ iam_role_name }}"
+  register: ec2_dbserver
 
-    - name: Create DBServer Instance
-      amazon.aws.ec2_instance:
-        name: "{{ ec2_dbserver_name }}"
-        key_name: "{{ key_dbserver_name }}"
-        vpc_subnet_id: "{{ subnet_db_id }}"
-        instance_type: t2.micro
-        image_id: "{{ ami_db_id }}"
-        security_group: "{{ security_group_db_name }}"
-        iam_instance_profile: "{{ iam_role_name }}"
-      register: ec2_dbserver
+- name: Create SSH Server Instance
+  amazon.aws.ec2_instance:
+    name: "{{ ec2_sshserver_name }}"
+    key_name: "{{ key_sshserver_name }}"
+    vpc_subnet_id: "{{ subnet_shh_id }}"
+    instance_type: t2.micro
+    image_id: "{{ ami_id }}"
+    security_group: "{{ security_group_ssh_name }}"
+    network_interfaces:
+      - assign_public_ip: true
+  register: ec2_sshserver
 
-    - name: Create SSH Server Instance
-      amazon.aws.ec2_instance:
-        name: "{{ ec2_sshserver_name }}"
-        key_name: "{{ key_sshserver_name }}"
-        vpc_subnet_id: "{{ subnet_shh_id }}"
-        instance_type: t2.micro
-        image_id: "{{ ami_id }}"
-        security_group: "{{ security_group_ssh_name }}"
-        network_interfaces:
-          - assign_public_ip: true
-      register: ec2_sshserver
+- name: Retrieve existing AWS Secret
+  amazon.aws.aws_secret:
+    name: "{{ secret_name }}"
+    region: "{{ region }}"
+    state: get_secret
+  register: existing_secret
 
-    - name: Retrieve existing AWS Secret
-      amazon.aws.aws_secret:
-        name: "{{ secret_name }}"
-        region: "{{ region }}"
-        state: get_secret
-      register: existing_secret
+- name: Update the HOST key with the new IP address
+  ansible.builtin.set_fact:
+    updated_secret: "{{ existing_secret.value | combine({'HOST': ec2_webserver.instances[0].network_interfaces[0].private_ip_address}) }}"
 
-    - name: Update the HOST key with the new IP address
-      set_fact:
-        updated_secret: "{{ existing_secret.value | combine({'HOST': ec2_webserver.instances[0].network_interfaces[0].private_ip_address}) }}"
+- name: Update the AWS Secret with the new HOST value
+  amazon.aws.aws_secret:
+    name: "{{ secret_name }}"
+    region: "{{ region }}"
+    state: present
+    value: "{{ updated_secret }}"
 
-    - name: Update the AWS Secret with the new HOST value
-      amazon.aws.aws_secret:
-        name: "{{ secret_name }}"
-        region: "{{ region }}"
-        state: present
-        value: "{{ updated_secret }}"
-
-    - name: Save Instances Configuration to File
-      ansible.builtin.copy:
-        dest: "{{ configs_dir }}/instances_config.yml"
-        mode: '0644'
-        owner: root
-        group: root
-        content: |
-          ec2_webserver_ids: "{{ ec2_webserver.instances[0].instance_id }}"
-          ec2_dbserver_ids: "{{ ec2_dbserver.instances[0].instance_id }}"
-          ec2_sshserver_ids: "{{ ec2_sshserver.instances[0].instance_id }}"
+- name: Save Instances Configuration to File
+  ansible.builtin.copy:
+    dest: "{{ configs_dir }}/instances_config.yml"
+    mode: '0644'
+    owner: root
+    group: root
+    content: |
+      ec2_webserver_ids: "{{ ec2_webserver.instances[0].instance_id }}"
+      ec2_dbserver_ids: "{{ ec2_dbserver.instances[0].instance_id }}"
+      ec2_sshserver_ids: "{{ ec2_sshserver.instances[0].instance_id }}"
