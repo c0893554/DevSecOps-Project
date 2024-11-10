@@ -1,7 +1,7 @@
 # create_network.yml
-    - name: Load initial networks variables
-      ansible.builtin.include_vars:
-        file: "{{ configs_dir }}/networks.yml"
+- name: Load initial networks variables
+  ansible.builtin.include_vars:
+    file: "{{ configs_dir }}/networks.yml"
 
     - name: Create VPC
       amazon.aws.ec2_vpc_net:
