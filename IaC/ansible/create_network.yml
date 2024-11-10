@@ -1,6 +1,6 @@
 # create_network.yml
     - name: Load initial networks variables
-      include_vars:
+      ansible.builtin.include_vars:
         file: "{{ configs_dir }}/networks.yml"
 
     - name: Create VPC
@@ -135,8 +135,11 @@
       register: route_table_inside
 
     - name: Save Network Configuration to File
-      copy:
+      ansible.builtin.copy:
         dest: "{{ configs_dir }}/network_config.yml"
+        mode: '0644'
+        owner: root
+        group: root
         content: |
           vpc_id: "{{ vpc.vpc.id }}"
           subnet_web_id: "{{ subnet_web.subnet.id }}"

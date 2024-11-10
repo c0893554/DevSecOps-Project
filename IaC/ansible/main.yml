@@ -1,18 +1,17 @@
 # main.yml
 - name: Orchestrate AWS Infrastructure Deployment
   hosts: localhost
-  gather_facts: no
+  gather_facts: false
   vars:
     user_data_dir: "../user-data"
     configs_dir: "../configs"
   tasks:
     - name: Create Network Infrastructure
-      include_tasks: create_network.yml
+      ansible.builtin.include_tasks: create_network.yml
       register: network_result
       tags: network
 
     - name: Launch Instances
-      include_tasks: launch_instance.yml
+      ansible.builtin.include_tasks: launch_instance.yml
       register: instance_result
       tags: instances
-
