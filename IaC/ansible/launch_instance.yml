@@ -1,7 +1,7 @@
 # launch_instance.yml
 
     - name: Load initial instances variables
-      include_vars:
+      ansible.builtin.include_vars:
         file: "{{ configs_dir }}/instances.yml"
   
     - name: Load network configuration variables
@@ -14,9 +14,8 @@
         key_name: "{{ key_webserver_name }}"
         vpc_subnet_id: "{{ subnet_web_id }}"
         instance_type: t2.micro
-        image_id: "{{ ami_id }}"
+        image_id: "{{ ami_web_id }}"
         security_group: "{{ security_group_name }}"
-        user_data: "{{ lookup('file', user_data_dir + '/user-data-webserver.sh') }}"
         iam_instance_profile: "{{ iam_role_name }}"
         network_interfaces:
           - assign_public_ip: true
@@ -28,9 +27,8 @@
         key_name: "{{ key_dbserver_name }}"
         vpc_subnet_id: "{{ subnet_db_id }}"
         instance_type: t2.micro
-        image_id: "{{ ami_id }}"
+        image_id: "{{ ami_db_id }}"
         security_group: "{{ security_group_db_name }}"
-        user_data: "{{ lookup('file', user_data_dir + '/user-data-dbserver.sh') }}"
         iam_instance_profile: "{{ iam_role_name }}"
       register: ec2_dbserver
 
@@ -42,10 +40,27 @@
         instance_type: t2.micro
         image_id: "{{ ami_id }}"
         security_group: "{{ security_group_ssh_name }}"
-        user_data: "{{ lookup('file', user_data_dir + '/user-data-shserver.sh') }}"
         network_interfaces:
           - assign_public_ip: true
       register: ec2_sshserver
+    
+    - name: Retrieve existing AWS Secret
+      amazon.aws.aws_secret:
+        name: "{{ secret_name }}"
+        region: "{{ region }}"
+        state: get_secret
+      register: existing_secret
+
+    - name: Update the HOST key with the new IP address
+      set_fact:
+        updated_secret: "{{ existing_secret.value | combine({'HOST': ec2_webserver.instances[0].network_interfaces[0].private_ip_address}) }}"
+    
+    - name: Update the AWS Secret with the new HOST value
+      amazon.aws.aws_secret:
+        name: "{{ secret_name }}"
+        region: "{{ region }}"
+        state: present
+        value: "{{ updated_secret }}"
 
     - name: Save Instances Configuration to File
       copy:

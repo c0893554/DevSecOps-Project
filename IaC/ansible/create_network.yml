@@ -1,159 +1,152 @@
 # create_network.yml
-    - name: Load initial networks variables
-      include_vars:
-        file: "{{ configs_dir }}/networks.yml"
+- name: Load initial networks variables
+  include_vars:
+    file: "{{ configs_dir }}/networks.yml"
   
-    - name: Create VPC
-      amazon.aws.ec2_vpc_net:
-        name: "{{ vpc_name }}"
-        cidr_block: "{{ vpc_cidr }}"
-      register: vpc
-      delay: 10
+- name: Create VPC
+  amazon.aws.ec2_vpc_net:
+    name: "{{ vpc_name }}"
+    cidr_block: "{{ vpc_cidr }}"
+    register: vpc
     
-    - name: Create Subnet to WebServer
-      amazon.aws.ec2_vpc_subnet:
-        vpc_id: "{{ vpc.vpc.id }}"
-        cidr: "{{ subnet_web_cidr }}"
-        region: "{{ region }}"
-        az: "{{ region }}a"
-        tags:
-          Name: "{{ subnet_web_name }}"
-      register: subnet_web
-      delay: 10
+- name: Create Subnet to WebServer
+  amazon.aws.ec2_vpc_subnet:
+    vpc_id: "{{ vpc.vpc.id }}"
+    cidr: "{{ subnet_web_cidr }}"
+    region: "{{ region }}"
+    az: "{{ region }}a"
+    tags:
+      Name: "{{ subnet_web_name }}"
+    register: subnet_web
 
-    - name: Create Internet Gateway WebServer
-      amazon.aws.ec2_vpc_igw:
-        vpc_id: "{{ vpc.vpc.id }}"
-        region: "{{ region }}"
-        tags:
-          Name: "{{ igw_name }}"
-      register: igw
-      delay: 10
+- name: Create Internet Gateway WebServer
+  amazon.aws.ec2_vpc_igw:
+    vpc_id: "{{ vpc.vpc.id }}"
+    region: "{{ region }}"
+    tags:
+      Name: "{{ igw_name }}"
+    register: igw
 
-    - name: Create Security Group WebServer
-      amazon.aws.ec2_security_group:
-        name: "{{ security_group_name_web }}"
-        description: "Security Group for Web Server"
-        vpc_id: "{{ vpc.vpc.id }}"
-        region: "{{ region }}"
-        tags:
-          Name: "{{ security_group_name_web }}"
-        rules:
-          - proto: tcp
-            from_port: 80
-            to_port: 80
-            cidr_ip: "0.0.0.0/0"
-            rule_desc: "Allow HTTP"
-          - proto: tcp
-            from_port: 443
-            to_port: 443
-            cidr_ip: "0.0.0.0/0"
-            rule_desc: "Allow HTTPS"
-          - proto: tcp
-            from_port: 22
-            to_port: 22
-            cidr_ip: "{{ subnet_ssh_cidr }}"
-            rule_desc: "Allow SSH"
-      register: security_group
+- name: Create Security Group WebServer
+  amazon.aws.ec2_security_group:
+    name: "{{ security_group_name_web }}"
+    description: "Security Group for Web Server"
+    vpc_id: "{{ vpc.vpc.id }}"
+    region: "{{ region }}"
+    tags:
+      Name: "{{ security_group_name_web }}"
+    rules:
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: "0.0.0.0/0"
+        rule_desc: "Allow HTTP"
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: "0.0.0.0/0"
+        rule_desc: "Allow HTTPS"
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: "{{ subnet_ssh_cidr }}"
+        rule_desc: "Allow SSH"
+    register: security_group
 
-    - name: Create subnet DBServer
-      amazon.aws.ec2_vpc_subnet:
-        vpc_id: "{{ vpc.vpc.id }}"
-        cidr: "{{ subnet_db_cidr }}"
-        region: "{{ region }}"
-        az: "{{ region }}a"
-        tags:
-          Name: "{{ subnet_db_name }}"
-      register: subnet_db
-      delay: 10
+- name: Create subnet DBServer
+  amazon.aws.ec2_vpc_subnet:
+    vpc_id: "{{ vpc.vpc.id }}"
+    cidr: "{{ subnet_db_cidr }}"
+    region: "{{ region }}"
+    az: "{{ region }}a"
+    tags:
+      Name: "{{ subnet_db_name }}"
+  register: subnet_db
 
-    - name: Create Security Group DBServer
-      amazon.aws.ec2_security_group:
-        name: "{{ security_group_name_db }}"
-        description: "Security Group for DataBase Server"
-        vpc_id: "{{ vpc.vpc.id }}"
-        region: "{{ region }}"
-        tags:
-          Name: "{{ security_group_name_db }}"
-        rules:
-          - proto: tcp
-            from_port: 5432
-            to_port: 5432
-            cidr_ip: "{{ subnet_web_cidr }}"
-            rule_desc: "Allow PostgreSQL"
-          - proto: tcp
-            from_port: 22
-            to_port: 22
-            cidr_ip: "{{ subnet_ssh_cidr }}"
-            rule_desc: "Allow SSH"
-      register: security_group_db
+- name: Create Security Group DBServer
+  amazon.aws.ec2_security_group:
+    name: "{{ security_group_name_db }}"
+    description: "Security Group for DataBase Server"
+    vpc_id: "{{ vpc.vpc.id }}"
+    region: "{{ region }}"
+    tags:
+      Name: "{{ security_group_name_db }}"
+    rules:
+      - proto: tcp
+        from_port: 5432
+        to_port: 5432
+        cidr_ip: "{{ subnet_web_cidr }}"
+        rule_desc: "Allow PostgreSQL"
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: "{{ subnet_ssh_cidr }}"
+        rule_desc: "Allow SSH"
+  register: security_group_db
 
-    - name: Create subnet SSH Server
-      amazon.aws.ec2_vpc_subnet:
-        vpc_id: "{{ vpc.vpc.id }}"
-        cidr: "{{ subnet_ssh_cidr }}"
-        region: "{{ region }}"
-        az: "{{ region }}a"
-        tags:
-          Name: "{{ subnet_ssh_name }}"
-      register: subnet_shh
-      delay: 10
+- name: Create subnet SSH Server
+  amazon.aws.ec2_vpc_subnet:
+    vpc_id: "{{ vpc.vpc.id }}"
+    cidr: "{{ subnet_ssh_cidr }}"
+    region: "{{ region }}"
+    az: "{{ region }}a"
+    tags:
+      Name: "{{ subnet_ssh_name }}"
+  register: subnet_shh
 
-    - name: Create Security Group SSH Server
-      amazon.aws.ec2_security_group:
-        name: "{{ security_group_name_ssh }}"
-        description: "Security Group for DataBase Server"
-        vpc_id: "{{ vpc.vpc.id }}"
-        region: "{{ region }}"
-        tags:
-          Name: "{{ security_group_name_ssh }}"
-        rules:
-          - proto: tcp
-            from_port: 22
-            to_port: 22
-            cidr_ip: "0.0.0.0/0"
-            rule_desc: "Allow SSH"
-      register: security_group_ssh
+- name: Create Security Group SSH Server
+  amazon.aws.ec2_security_group:
+    name: "{{ security_group_name_ssh }}"
+    description: "Security Group for DataBase Server"
+    vpc_id: "{{ vpc.vpc.id }}"
+    region: "{{ region }}"
+    tags:
+      Name: "{{ security_group_name_ssh }}"
+    rules:
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: "0.0.0.0/0"
+        rule_desc: "Allow SSH"
+  register: security_group_ssh
 
-    - name: Create Route Table OutSide
-      amazon.aws.ec2_vpc_route_table:
-        vpc_id: "{{ vpc.vpc.id }}"
-        region: "{{ region }}"
-        tags:
-          Name: "{{ route_table_name_outside }}"
-        subnets:
-          - "{{ subnet_web.subnet.id }}"
-          - "{{ subnet_shh.subnet.id }}"
-        routes:
-          - dest: 0.0.0.0/0
-            gateway_id: "{{ igw.gateway_id }}"
-      register: route_table_outside
+- name: Create Route Table OutSide
+  amazon.aws.ec2_vpc_route_table:
+    vpc_id: "{{ vpc.vpc.id }}"
+    region: "{{ region }}"
+    tags:
+      Name: "{{ route_table_name_outside }}"
+    subnets:
+      - "{{ subnet_web.subnet.id }}"
+      - "{{ subnet_shh.subnet.id }}"
+    routes:
+      - dest: 0.0.0.0/0
+        gateway_id: "{{ igw.gateway_id }}"
+  register: route_table_outside
 
-    - name: Create Route Table Inside
-      amazon.aws.ec2_vpc_route_table:
-        vpc_id: "{{ vpc.vpc.id }}"
-        region: "{{ region }}"
-        tags:
-          Name: "{{ route_table_name_inside }}"
-        subnets:
-          - "{{ subnet_db.subnet.id }}"
-          - "{{ subnet_web.subnet.id }}"
-          - "{{ subnet_shh.subnet.id }}"
-      register: route_table_inside
+- name: Create Route Table Inside
+  amazon.aws.ec2_vpc_route_table:
+    vpc_id: "{{ vpc.vpc.id }}"
+    region: "{{ region }}"
+    tags:
+      Name: "{{ route_table_name_inside }}"
+    subnets:
+      - "{{ subnet_db.subnet.id }}"
+  register: route_table_inside
 
-    - name: Save Network Configuration to File
-      copy:
-        dest: "{{ configs_dir }}/network_config.yml"
-        content: |
-          vpc_id: "{{ vpc.vpc.id }}"
-          subnet_web_id: "{{ subnet_web.subnet.id }}"
-          subnet_db_id: "{{ subnet_db.subnet.id }}"
-          subnet_shh_id: "{{ subnet_shh.subnet.id }}"
-          security_group_name: "{{ security_group.group_name }}"
-          security_group_db_name: "{{ security_group_db.group_name }}"
-          security_group_ssh_name: "{{ security_group_ssh.group_name }}"
-          security_group_id: "{{ security_group.group_id }}"
-          security_group_db_id: "{{ security_group_db.group_id }}"
-          security_group_ssh_id: "{{ security_group_ssh.group_id }}"
-          route_table_outside_id: "{{ route_table_outside.route_table.id }}"
-          route_table_name_inside_id: "{{ route_table_inside.route_table.id }}"
+- name: Save Network Configuration to File
+  copy:
+    dest: "{{ configs_dir }}/network_config.yml"
+    content: |
+      vpc_id: "{{ vpc.vpc.id }}"
+      subnet_web_id: "{{ subnet_web.subnet.id }}"
+      subnet_db_id: "{{ subnet_db.subnet.id }}"
+      subnet_shh_id: "{{ subnet_shh.subnet.id }}"
+      security_group_name: "{{ security_group.group_name }}"
+      security_group_db_name: "{{ security_group_db.group_name }}"
+      security_group_ssh_name: "{{ security_group_ssh.group_name }}"
+      security_group_id: "{{ security_group.group_id }}"
+      security_group_db_id: "{{ security_group_db.group_id }}"
+      security_group_ssh_id: "{{ security_group_ssh.group_id }}"
+      route_table_outside_id: "{{ route_table_outside.route_table.id }}"
+      route_table_name_inside_id: "{{ route_table_inside.route_table.id }}"

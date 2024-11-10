@@ -46,7 +46,8 @@
           - "{{ ec2_dbserver_ids }}"
           - "{{ ec2_sshserver_ids }}"
       register: instances_check
-      delay: 60
+      retries: 10
+      delay: 30
 
     - name: Remove Subnet Web Server
       amazon.aws.ec2_vpc_subnet:
