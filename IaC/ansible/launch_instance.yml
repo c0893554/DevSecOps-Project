@@ -20,10 +20,11 @@
     iam_instance_profile: "{{ iam_role_name }}"
     volumes:
       - device_name: "/dev/xvda"
-        volume_type: gp2
-        volume_size: "{{ volume_size }}"
-        encrypted: "{{ encrypted }}"
-        kms_key_id: "{{ kms_key_id }}"
+        ebs:
+          volume_type: gp2
+          volume_size: "{{ volume_size }}"
+          encrypted: "{{ encrypted }}"
+          kms_key_id: "{{ kms_key_id }}"
     network_interfaces:
       - assign_public_ip: true
   register: ec2_webserver
