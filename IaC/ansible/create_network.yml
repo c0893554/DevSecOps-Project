@@ -137,9 +137,9 @@
 - name: Save Network Configuration to File
   ansible.builtin.copy:
     dest: "{{ configs_dir }}/network_config.yml"
-    mode: '0644'
-    owner: root
-    group: root
+    #mode: '0644'
+    #owner: root
+    #group: root
     content: |
       vpc_id: "{{ vpc.vpc.id }}"
       subnet_web_id: "{{ subnet_web.subnet.id }}"

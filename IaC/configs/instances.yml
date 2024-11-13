@@ -10,3 +10,7 @@ ami_db_id: "ami-04ac74f94359e134b"
 iam_role_name: "EC2Role"
 secret_name: "secret_test"
 region: "us-east-2"
+kms_key_id: "arn:aws:kms:us-east-2:537124946613:key/c620773f-1589-4a65-a45a-a362a0e6334b"
+volume_size: 10
+instance_type: "t2.micro"
+encrypted: true
