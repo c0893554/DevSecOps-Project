@@ -76,7 +76,7 @@
 - name: Save Instances Configuration to File
   ansible.builtin.copy:
     dest: "{{ configs_dir }}/instances_config.yml"
-    mode: '0644'
+    #mode: '0644'
     #owner: root
     #group: root
     content: |
