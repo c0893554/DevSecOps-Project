@@ -16,6 +16,12 @@
     image_id: "{{ ami_web_id }}"
     security_group: "{{ security_group_name }}"
     iam_instance_profile: "{{ iam_role_name }}"
+    volumes:
+          - device_name: "/dev/xvda"
+            volume_type: gp2
+            volume_size: "{{ volume_size }}"
+            encrypted: "{{ encrypted }}"
+            kms_key_id: "{{ kms_key_id }}"
     network_interfaces:
       - assign_public_ip: true
   register: ec2_webserver
@@ -29,6 +35,12 @@
     image_id: "{{ ami_db_id }}"
     security_group: "{{ security_group_db_name }}"
     iam_instance_profile: "{{ iam_role_name }}"
+    volumes:
+          - device_name: "/dev/xvda"
+            volume_type: gp2
+            volume_size: "{{ volume_size }}"
+            encrypted: "{{ encrypted }}"
+            kms_key_id: "{{ kms_key_id }}"
   register: ec2_dbserver
 
 - name: Create SSH Server Instance
