@@ -2,10 +2,12 @@
 - name: Load initial instances variables
   ansible.builtin.include_vars:
     file: "{{ configs_dir }}/instances.yml"
+  tags: instances
 
 - name: Load network configuration variables
   ansible.builtin.include_vars:
     file: "{{ configs_dir }}/network_config.yml"
+  tags: instances
 
 - name: Create WebServer Instance
   amazon.aws.ec2_instance:
@@ -25,6 +27,7 @@
     network_interfaces:
       - assign_public_ip: true
   register: ec2_webserver
+  tags: instances
 
 - name: Create DBServer Instance
   amazon.aws.ec2_instance:
@@ -42,6 +45,7 @@
         encrypted: "{{ encrypted }}"
         kms_key_id: "{{ kms_key_id }}"
   register: ec2_dbserver
+  tags: instances
 
 - name: Create SSH Server Instance
   amazon.aws.ec2_instance:
@@ -54,6 +58,7 @@
     network_interfaces:
       - assign_public_ip: true
   register: ec2_sshserver
+  tags: instances
 
 - name: Save Instances Configuration to File
   ansible.builtin.copy:
@@ -65,3 +70,4 @@
       ec2_webserver_ids: "{{ ec2_webserver.instances[0].instance_id }}"
       ec2_dbserver_ids: "{{ ec2_dbserver.instances[0].instance_id }}"
       ec2_sshserver_ids: "{{ ec2_sshserver.instances[0].instance_id }}"
+  tags: instances
