@@ -7,18 +7,18 @@
 
   tasks:
     - name: Load network configuration variables
-      include_vars:
+      ansible.builtin.include_vars:
         file: "{{ configs_dir }}/network_config.yml"
       tags: RemoveVPC
 
     - name: Load Instances configuration variables
-      include_vars:
+      ansible.builtin.include_vars:
         file: "{{ configs_dir }}/instances_config.yml"
 
     - name: Terminate WebServer Instance
       amazon.aws.ec2_instance:
         state: absent
-        wait: yes
+        wait: true
         instance_ids:
           - "{{ ec2_webserver_ids }}"
       register: webserver_terminated
@@ -26,7 +26,7 @@
     - name: Terminate DBServer Instance
       amazon.aws.ec2_instance:
         state: absent
-        wait: yes
+        wait: true
         instance_ids:
           - "{{ ec2_dbserver_ids }}"
       register: dbserver_terminated
@@ -34,7 +34,7 @@
     - name: Terminate SSH Server Instance
       amazon.aws.ec2_instance:
         state: absent
-        wait: yes
+        wait: true
         instance_ids:
           - "{{ ec2_sshserver_ids }}"
       register: sshserver_terminated
@@ -54,7 +54,6 @@
         vpc_id: "{{ vpc_id }}"
         cidr: "10.0.1.0/24"
         state: absent
-      ignore_errors: yes  # Ignore if already deleted or does not exist
       tags: RemoveVPC
 
     - name: Remove Subnet DB Server
@@ -62,7 +61,6 @@
         vpc_id: "{{ vpc_id }}"
         cidr: "10.0.2.0/24"
         state: absent
-      ignore_errors: yes  # Ignore if already deleted or does not exist
       tags: RemoveVPC
 
     - name: Remove Subnet DB Server
@@ -70,14 +68,12 @@
         vpc_id: "{{ vpc_id }}"
         cidr: "10.0.3.0/24"
         state: absent
-      ignore_errors: yes  # Ignore if already deleted or does not exist
       tags: RemoveVPC
 
     - name: Detach and Delete Internet Gateway
       amazon.aws.ec2_vpc_igw:
         vpc_id: "{{ vpc_id }}"
         state: absent
-      ignore_errors: yes  # Skip if there is no internet gateway attached
       tags: RemoveVPC
 
     - name: delete route table outside
