@@ -55,24 +55,6 @@
       - assign_public_ip: true
   register: ec2_sshserver
 
-- name: Retrieve existing AWS Secret
-  amazon.aws.aws_secret:
-    name: "{{ secret_name }}"
-    region: "{{ region }}"
-    state: get_secret
-  register: existing_secret
-
-- name: Update the HOST key with the new IP address
-  ansible.builtin.set_fact:
-    updated_secret: "{{ existing_secret.value | combine({'HOST': ec2_webserver.instances[0].network_interfaces[0].private_ip_address}) }}"
-
-- name: Update the AWS Secret with the new HOST value
-  amazon.aws.aws_secret:
-    name: "{{ secret_name }}"
-    region: "{{ region }}"
-    state: present
-    value: "{{ updated_secret }}"
-
 - name: Save Instances Configuration to File
   ansible.builtin.copy:
     dest: "{{ configs_dir }}/instances_config.yml"
