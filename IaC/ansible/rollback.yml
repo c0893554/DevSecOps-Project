@@ -1,7 +1,7 @@
 # rollback.yml
 - name: Rollback AWS Infrastructure
   hosts: localhost
-  gather_facts: no
+  gather_facts: true
   vars:
     configs_dir: "../configs"
 
@@ -76,7 +76,7 @@
         state: absent
       tags: RemoveVPC
 
-    - name: delete route table outside
+    - name: Delete route table outside
       amazon.aws.ec2_vpc_route_table:
         vpc_id: "{{ vpc_id }}"
         route_table_id: "{{ route_table_outside_id }}"
@@ -84,7 +84,7 @@
         state: absent
       tags: RemoveVPC
 
-    - name: delete route table inside
+    - name: Delete route table inside
       amazon.aws.ec2_vpc_route_table:
         vpc_id: "{{ vpc_id }}"
         route_table_id: "{{ route_table_name_inside_id }}"
@@ -92,19 +92,19 @@
         state: absent
       tags: RemoveVPC
 
-    - name: delete Security group Web Server
+    - name: Delete Security group Web Server
       amazon.aws.ec2_security_group:
         group_id: "{{ security_group_id }}"
         state: absent
       tags: RemoveVPC
 
-    - name: delete Security group DB Server
+    - name: Delete Security group DB Server
       amazon.aws.ec2_security_group:
         group_id: "{{ security_group_db_id }}"
         state: absent
       tags: RemoveVPC
 
-    - name: delete Security group SSH Server
+    - name: Delete Security group SSH Server
       amazon.aws.ec2_security_group:
         group_id: "{{ security_group_ssh_id }}"
         state: absent
