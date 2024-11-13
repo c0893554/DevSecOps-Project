@@ -114,5 +114,5 @@
       amazon.aws.ec2_vpc_net:
         vpc_id: "{{ vpc_id }}"
         state: absent
-        purge_cidrs: yes
+        purge_cidrs: true
       tags: RemoveVPC
