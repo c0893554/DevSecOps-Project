@@ -1,0 +1,46 @@
+image: python:3.8
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  ANSIBLE_HOST_KEY_CHECKING: "False"
+
+stages:
+  - setup
+  - deploy
+  - destroy
+
+before_script:
+  - python --version
+  - pip install --upgrade pip
+  - pip install ansible boto3 awscli
+
+setup:
+  stage: setup
+  script:
+    - echo "Setting up environment..."
+    - aws sts get-caller-identity
+
+deploy_network:
+  stage: deploy
+  script:
+    - echo "Deploying network with Ansible..."
+    - ansible-playbook IaC/ansible/main.yml
+  only:
+    - main
+
+deploy_instances:
+  stage: deploy
+  script:
+    - echo "Launching EC2 instances with Ansible..."
+    - ansible-playbook -i inventory/hosts.ini launch_instance.yml
+  only:
+    - main
+
+destroy_infrastructure:
+  stage: destroy
+  script:
+    - echo "Destroying infrastructure..."
+    - ansible-playbook ansible-playbook IaC/ansible/rollback.yml
+  only:
+    - main
+  when: manual 
