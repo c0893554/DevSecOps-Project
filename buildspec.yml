@@ -1,0 +1,26 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.x
+    commands:
+      - pip install ansible boto3 awscli
+
+  pre_build:
+    commands:
+      - echo "Starting Ansible playbook execution"
+      - ansible --version
+
+  build:
+    commands:
+      - echo "Running Ansible playbooks"
+      - ansible-playbook IaC/ansible/main.yml
+
+  post_build:
+    commands:
+      - echo "Ansible playbooks executed successfully"
+artifacts:
+  files:
+    - '**/*'
+  discard-paths: yes
